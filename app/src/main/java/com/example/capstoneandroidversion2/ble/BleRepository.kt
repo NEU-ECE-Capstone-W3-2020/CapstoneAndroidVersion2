@@ -1,5 +1,4 @@
-
-package com.example.capstoneandroidversion2.ui.ble
+package com.example.capstoneandroidversion2.ble
 
 import java.util.*
 

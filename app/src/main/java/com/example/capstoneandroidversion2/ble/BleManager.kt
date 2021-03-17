@@ -1,4 +1,4 @@
-package com.example.capstoneandroidversion2.ui.ble
+package com.example.capstoneandroidversion2.ble
 
 import android.bluetooth.*
 import android.bluetooth.le.ScanCallback
@@ -7,18 +7,17 @@ import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.LiveDataScope
 import androidx.lifecycle.MutableLiveData
 import java.nio.charset.Charset
 import java.util.*
 
 class BleManager(
-    val deviceName: String,
-    val bluetoothAdapter: BluetoothAdapter,
-    val service_uuid: UUID,
-    val read_char: UUID,
-    val write_char: UUID,
-    val context: Context
+        val deviceName: String,
+        val bluetoothAdapter: BluetoothAdapter,
+        val service_uuid: UUID,
+        val read_char: UUID,
+        val write_char: UUID,
+        val context: Context
 ) {
 
     private val logTag: String = "BleManager"
@@ -33,33 +32,13 @@ class BleManager(
     private val _gattDevice = MutableLiveData<BluetoothGatt?>()
     val gattDeviceLiveData: LiveData<BluetoothGatt?> = _gattDevice
 
-
-    // public API functions
-
-
-    // remember that whatever activity we use, we need to get certain permissions to do any of these
-
-    // make a project-wide object that checks for permissions and updates when a user has this granted?
-
-
-    //TODO: pair to bluetooth (ideally in the init)
-
-    //TODO: read from the bluetooth device
-
-    //TODO: write to the bluetooth device
-
-    //TODO: search for the bluetooth shit from the UUID
-
-
-    // copied from experimental code
     // BLUETOOTH SCANNING
     private val bleScanner by lazy {
         bluetoothAdapter.bluetoothLeScanner
     }
     private val scanSettings = ScanSettings.Builder()
-        .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-        .build()
-
+            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+            .build()
     private val scanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             with(result.device) {
@@ -73,30 +52,11 @@ class BleManager(
             }
         }
     }
-
-    fun startBleScan() {
-        bleScanner.startScan(null, scanSettings, scanCallback)
-        isScanning = true
-    }
-
     private var isScanning = false
         set(value) {
             field = value
             Log.i(logTag, if (value) "Stopped Scan" else "Started Scan")
         }
-
-
-    fun stopBleScan() {
-        bleScanner.stopScan(scanCallback)
-        isScanning = false
-    }
-
-    fun initiateConnection() {
-        correctScanResult?.device?.let {
-            it.connectGatt(context, false, gattCallback)
-        }
-    }
-
 
     private val gattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
@@ -118,8 +78,8 @@ class BleManager(
                 }
             } else {
                 Log.w(
-                    "BluetoothGattCallback",
-                    "Error $status encountered for $deviceAddress! Disconnecting..."
+                        "BluetoothGattCallback",
+                        "Error $status encountered for $deviceAddress! Disconnecting..."
                 )
                 gatt.close()
                 _gattDevice.postValue(null)
@@ -137,12 +97,12 @@ class BleManager(
 
                 if (it.uuid == service_uuid) {
                     // should enable live update on characteristic change
-                    with(gatt){
+                    with(gatt) {
                         readCharacteristic(it.getCharacteristic(read_char))
                         setCharacteristicNotification(
-                            getService(service_uuid).getCharacteristic(
-                                read_char
-                            ), true
+                                getService(service_uuid).getCharacteristic(
+                                        read_char
+                                ), true
                         )
                     }
                 }
@@ -151,9 +111,9 @@ class BleManager(
         }
 
         override fun onCharacteristicRead(
-            gatt: BluetoothGatt?,
-            characteristic: BluetoothGattCharacteristic?,
-            status: Int
+                gatt: BluetoothGatt?,
+                characteristic: BluetoothGattCharacteristic?,
+                status: Int
         ) {
             with(characteristic) {
                 when (status) {
@@ -172,8 +132,8 @@ class BleManager(
         }
 
         override fun onCharacteristicChanged(
-            gatt: BluetoothGatt?,
-            characteristic: BluetoothGattCharacteristic?
+                gatt: BluetoothGatt?,
+                characteristic: BluetoothGattCharacteristic?
         ) {
             Log.i(logTag, "Characteristic changed: $characteristic")
             characteristic?.apply {
@@ -182,9 +142,9 @@ class BleManager(
         }
 
         override fun onCharacteristicWrite(
-            gatt: BluetoothGatt?,
-            characteristic: BluetoothGattCharacteristic?,
-            status: Int
+                gatt: BluetoothGatt?,
+                characteristic: BluetoothGattCharacteristic?,
+                status: Int
         ) {
             characteristic?.apply {
                 when (status) {
@@ -203,6 +163,23 @@ class BleManager(
         }
     }
 
+
+    fun startBleScan() {
+        bleScanner.startScan(null, scanSettings, scanCallback)
+        isScanning = true
+    }
+
+    fun stopBleScan() {
+        bleScanner.stopScan(scanCallback)
+        isScanning = false
+    }
+
+    fun initiateConnection() {
+        correctScanResult?.device?.let {
+            it.connectGatt(context, false, gattCallback)
+        }
+    }
+
     private fun readFromGatt(gatt: BluetoothGatt) {
         val char = gatt.getService(service_uuid).getCharacteristic(read_char)
         gatt.readCharacteristic(char)
@@ -210,9 +187,9 @@ class BleManager(
 
     private fun writeToGatt(gatt: BluetoothGatt, text: String) {
         writeCharacteristic(
-            gatt.getService(service_uuid).getCharacteristic(write_char), text.toByteArray(
+                gatt.getService(service_uuid).getCharacteristic(write_char), text.toByteArray(
                 Charset.defaultCharset()
-            )
+        )
         )
     }
 
