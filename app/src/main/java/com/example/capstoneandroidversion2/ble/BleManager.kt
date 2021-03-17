@@ -137,7 +137,8 @@ class BleManager(
         ) {
             Log.i(logTag, "Characteristic changed: $characteristic")
             characteristic?.apply {
-                value.toString(Charset.defaultCharset())
+                // add a newly updated message to the queue
+                BleRepository.messageStack.push(value.toString(Charset.defaultCharset()))
             }
         }
 
