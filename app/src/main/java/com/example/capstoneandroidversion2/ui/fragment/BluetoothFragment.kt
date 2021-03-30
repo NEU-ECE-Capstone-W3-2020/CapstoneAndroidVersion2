@@ -30,10 +30,16 @@ import java.util.*
 private const val ENABLE_BLUETOOTH_REQUEST_CODE = 1
 private const val LOCATION_PERMISSION_REQUEST_CODE = 2
 
-val SERVICE_UUID: UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e".toUpperCase(Locale.ROOT))
-val READ_CHAR: UUID = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e".toUpperCase(Locale.ROOT))
-val WRITE_CHAR: UUID = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e".toUpperCase(Locale.ROOT))
+val SERVICE_UUID: UUID =
+    UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e".toUpperCase(Locale.ROOT))
+val READ_CHAR: UUID =
+    UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e".toUpperCase(Locale.ROOT))
+val WRITE_CHAR: UUID =
+    UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e".toUpperCase(Locale.ROOT))
 
+/**
+ * TODO: refactor this to work with our new service
+ */
 class BluetoothFragment() : Fragment() {
 
     private lateinit var pairButton: Button
@@ -50,7 +56,7 @@ class BluetoothFragment() : Fragment() {
     // attaching bluetooth to the fragment (TODO fix this)
     private val bluetoothAdapter: BluetoothAdapter by lazy {
         val bluetoothManager =
-                requireActivity().getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+            requireActivity().getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothManager.adapter
     }
 
@@ -60,14 +66,14 @@ class BluetoothFragment() : Fragment() {
         }
         requireActivity().runOnUiThread {
             val builder = AlertDialog.Builder(requireContext())
-                    .setTitle("Location Permission required")
-                    .setMessage("Need location")
-                    .setPositiveButton("OK") { _, _ ->
-                        requireActivity().requestPermission(
-                                Manifest.permission.ACCESS_FINE_LOCATION,
-                                LOCATION_PERMISSION_REQUEST_CODE
-                        )
-                    }
+                .setTitle("Location Permission required")
+                .setMessage("Need location")
+                .setPositiveButton("OK") { _, _ ->
+                    requireActivity().requestPermission(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        LOCATION_PERMISSION_REQUEST_CODE
+                    )
+                }
             builder.show()
         }
     }
@@ -104,9 +110,9 @@ class BluetoothFragment() : Fragment() {
 
 
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<out String>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
     ) {
         when (requestCode) {
             LOCATION_PERMISSION_REQUEST_CODE -> {
@@ -131,41 +137,43 @@ class BluetoothFragment() : Fragment() {
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         viewModel =
-                ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+            ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_bluetooth, container, false)
         val nameInput: EditText = root.findViewById(R.id.device_name_edittext)
         val pairedLayout: View = root.findViewById(R.id.paired_layout)
         pairButton = root.findViewById(R.id.pair_button)
-        viewModel.isPaired.observe(viewLifecycleOwner, {
+       /* viewModel.isPaired.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             pairedLayout.visibility = if (it) VISIBLE else GONE
-        })
+        })*/
         pairButton.setOnClickListener {
-            viewModel.pairDevice(
-                    nameInput.text.toString(), bluetoothAdapter, SERVICE_UUID,
-                    READ_CHAR, WRITE_CHAR, requireContext()
-            )
+            /*viewModel.pairDevice(
+                nameInput.text.toString(), bluetoothAdapter, SERVICE_UUID,
+                READ_CHAR, WRITE_CHAR, requireContext()
+            )*/
         }
         connectButton = root.findViewById(R.id.connect_device_button)
         connectButton.setOnClickListener {
-            viewModel.connectToFoundDevice()
+            /*viewModel.connectToFoundDevice()*/
         }
         return root
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.unPairDevice()
+       /* viewModel.unPairDevice()*/
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.viewState.observe(viewLifecycleOwner, { handleViewState(it) })
+        viewModel.viewState.observe(
+            viewLifecycleOwner,
+            androidx.lifecycle.Observer { handleViewState(it) })
     }
 
     // ext functions
