@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+    <component name="MarkdownEnhProjectSettings">
+        <AnnotatorSettings abbreviationDuplicates="true" abbreviationNotUsed="true" anchorHasDuplicates="true"
+            anchorIsIgnored="true" anchorIsUnresolved="true" anchorLineReferenceFormat="true"
+            anchorLineReferenceIsUnresolved="true" attributeIdDuplicateDefinition="true" attributeIdNotUsed="true"
+            enumRefDuplicateDefinition="true" enumRefDuplicates="true" enumRefLinkDuplicates="true"
+            enumRefLinkUnresolved="true" enumRefNotUsed="true" enumRefUnresolved="true"
+            footnoteDuplicateDefinition="true" footnoteDuplicates="true" footnoteNotUsed="true"
+            footnoteUnresolved="true" imageTargetNotInRaw="true" linkCaseMismatch="true"
+            linkHasBadExt="true" linkIsIgnored="true"
+            linkNeedsExt="true" linkTargetHasBadExt="true" linkTargetNeedsExt="true"
+            linkTargetsWikiHasBadExt="true" linkTargetsWikiHasExt="true" macroDuplicateDefinition="true"
+            macroDuplicates="true" macroNotUsed="true"
+            macroUnresolved="true" multipleWikiTargetsMatch="true"
+            notUnderSameRepo="true" notUnderSourceWikiHome="true"
+            notUnderWikiHome="true" referenceDuplicateDefinition="true" referenceDuplicates="true"
+            referenceNotUsed="true" referenceUnresolved="true" referenceUnresolvedNumericId="true"
+            repoRelativeAcrossVcsRoots="true" simTocTitleSpaceNeeded="true" simTocUpdateNeeded="true"
+            targetHasSpaces="true" targetNameHasAnchor="true" targetNotUnderVcs="false"
+            targetNotWikiPageExt="true" targetPathHasAnchor="true"
+            unresolvedLinkReference="true" wikiCaseMismatch="true" wikiLinkHasDashes="true"
+            wikiLinkHasOnlyAnchor="true" wikiLinkHasSlash="true" wikiLinkHasSubdir="true"
+            wikiLinkNotInWiki="true" />
+        <HtmlExportSettings copyLinkedImages="false" cssDir="css" exportOnSettingsChange="true" imageDir=""
+            imagePathType="0" linkFormatType="HTTP_ABSOLUTE" linkToExportedHtml="true" noCssNoScripts="false" parentDir=""
+            plainHtml="false" regenerateOnProjectOpen="false" scriptDir="js" targetDir=""
+            targetExt="" targetPathType="2" updateOnSave="false"
+            useElementStyleAttribute="false" useTargetExt="false" />
+        <LinkMapSettings>
+            <textMaps />
+        </LinkMapSettings>
+    </component>
+</project>
