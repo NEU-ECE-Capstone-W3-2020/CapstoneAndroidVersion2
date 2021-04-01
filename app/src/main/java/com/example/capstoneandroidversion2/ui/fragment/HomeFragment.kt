@@ -1,4 +1,4 @@
-package com.example.capstoneandroidversion2.ui.home
+package com.example.capstoneandroidversion2.ui.fragment
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,46 +7,41 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.example.capstoneandroidversion2.R
 import com.example.capstoneandroidversion2.ble.*
+import com.example.capstoneandroidversion2.bus.BleServiceBus
+import com.example.capstoneandroidversion2.bus.BusHolder
+import com.example.capstoneandroidversion2.bus.FragmentToBleBus
 import com.squareup.otto.Subscribe
 
 class HomeFragment : Fragment() {
-
-    private lateinit var homeViewModel: HomeViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
+
         val root = inflater.inflate(R.layout.fragment_home, container, false)
-        val textView: TextView = root.findViewById(R.id.text_home)
-        homeViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
+
         val connectButton: Button = root.findViewById(R.id.home_button)
         connectButton.setOnClickListener {
             requireActivity().startService(
                 Intent(
                     requireActivity(),
-                    BleServiceOldSchool::class.java
+                    BleService::class.java
                 )
             )
         }
         val disconnectButton: Button = root.findViewById(R.id.disconnect_service_button)
         disconnectButton.setOnClickListener {
+            //BusHolder.bus.post(FragmentToBleBus(shouldDisconnect = 1))
             val stop = requireActivity().stopService(
                 Intent(
                     requireActivity(),
-                    BleServiceOldSchool::class.java
+                    BleService::class.java
                 )
             )
             Log.e("TAG", stop.toString())
@@ -75,18 +70,25 @@ class HomeFragment : Fragment() {
         }
         event.device?.let {
             System.out.println("SCAN RESULT ${it.device}")
-            BusHolder.bus.post(FragmentToBleBus(scanResult = it))
         }
         event.currentReadValue?.let {
+            //TODO: make this spit the value into our repo
             requireActivity().runOnUiThread {
                 Toast.makeText(
                     requireContext(),
-                    it,
+                    it.removeNewLine(),
                     Toast.LENGTH_LONG
                 ).show()
             }
+        }
+        event.shouldKillService?.let {
+
         }
     }
 
 
 }
+
+private fun String.removeNewLine(): String =
+    this.removeSuffix("\n")
+

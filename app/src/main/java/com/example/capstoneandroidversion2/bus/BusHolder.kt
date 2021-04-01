@@ -1,4 +1,4 @@
-package com.example.capstoneandroidversion2.ble
+package com.example.capstoneandroidversion2.bus
 
 import com.squareup.otto.Bus
 import com.squareup.otto.ThreadEnforcer

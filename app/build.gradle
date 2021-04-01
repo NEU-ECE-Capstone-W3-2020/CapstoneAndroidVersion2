@@ -48,8 +48,15 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    //RX Ble
-    implementation "com.polidea.rxandroidble2:rxandroidble:1.11.1"
     // Otto event bus
     implementation 'com.squareup:otto:1.3.8'
+    // nrf ble
+    // Brings the new BluetoothLeScanner API to older platforms
+    implementation 'no.nordicsemi.android.support.v18:scanner:1.4.3'
+    //implementation project(":scanner")
+    // Log Bluetooth LE events in nRF Logger
+    implementation 'no.nordicsemi.android:log:2.2.0'
+    // BLE library
+    implementation 'no.nordicsemi.android:ble-livedata:2.2.4'
+    implementation 'no.nordicsemi.android:ble:2.2.4'
 }
