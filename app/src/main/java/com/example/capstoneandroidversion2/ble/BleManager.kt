@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothGattCharacteristic
 import android.content.Context
 import com.example.capstoneandroidversion2.bus.BleServiceBus
 import com.example.capstoneandroidversion2.bus.BusHolder
+import com.example.capstoneandroidversion2.model.NotificationMessage
 import no.nordicsemi.android.ble.callback.DataReceivedCallback
 import no.nordicsemi.android.ble.callback.DataSentCallback
 import no.nordicsemi.android.ble.data.Data
@@ -13,7 +14,7 @@ import no.nordicsemi.android.ble.livedata.ObservableBleManager
 import java.nio.charset.Charset
 import java.util.*
 
-class BleManager(context: Context) : ObservableBleManager(context) {
+class BleManager(context: Context, postNotification: (NotificationMessage) -> Unit) : ObservableBleManager(context) {
 
     companion object {
         private val SERVICE = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
@@ -40,6 +41,8 @@ class BleManager(context: Context) : ObservableBleManager(context) {
         override fun onDataReceived(device: BluetoothDevice, data: Data) {
             //readState.postValue(data.value?.toString(Charset.defaultCharset()))
             BusHolder.bus.post(BleServiceBus(currentReadValue = data.value?.toString(Charset.defaultCharset())))
+            //TODO: fix this so it ignores repeat messages, or properly handles messages of a longer length
+            postNotification(NotificationMessage(body = data.value?.toString(Charset.defaultCharset()) ?: "error reading data value", subject = "New Tag Discovered!"))
         }
 
     }
