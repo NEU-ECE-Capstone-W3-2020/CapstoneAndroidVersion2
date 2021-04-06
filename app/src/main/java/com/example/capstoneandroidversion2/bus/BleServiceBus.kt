@@ -6,7 +6,6 @@ data class BleServiceBus(
     val isDeviceFound: Boolean? = null,
     val isDeviceConnected: Boolean? = null,
     val currentReadValue: String? = null,
-    val device: ScanResult? = null,
-    val shouldKillService: Int? = null
+    val device: ScanResult? = null
 ) {
 }

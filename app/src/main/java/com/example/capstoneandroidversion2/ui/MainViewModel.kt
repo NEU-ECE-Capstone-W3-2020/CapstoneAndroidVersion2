@@ -13,4 +13,8 @@ class MainViewModel : ViewModel() {
     }
     val viewState: LiveData<MainViewState> = _viewState
 
+    fun postReadValue(msg: String) {
+        _viewState.postValue(_viewState.value?.appendMessage(msg))
+    }
+
 }

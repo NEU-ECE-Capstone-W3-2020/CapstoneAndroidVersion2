@@ -37,7 +37,6 @@ class HomeFragment : Fragment() {
         }
         val disconnectButton: Button = root.findViewById(R.id.disconnect_service_button)
         disconnectButton.setOnClickListener {
-            //BusHolder.bus.post(FragmentToBleBus(shouldDisconnect = 1))
             val stop = requireActivity().stopService(
                 Intent(
                     requireActivity(),
@@ -55,7 +54,6 @@ class HomeFragment : Fragment() {
         writeButton.setOnClickListener {
             BusHolder.bus.post(FragmentToBleBus(shouldWrite = toWrite))
         }
-
         BusHolder.bus.register(this)
         return root
     }
@@ -81,12 +79,7 @@ class HomeFragment : Fragment() {
                 ).show()
             }
         }
-        event.shouldKillService?.let {
-
-        }
     }
-
-
 }
 
 private fun String.removeNewLine(): String =
