@@ -44,7 +44,7 @@ class BleManager(context: Context, postNotification: (NotificationMessage) -> Un
             //readState.postValue(data.value?.toString(Charset.defaultCharset()))
             //BusHolder.bus.post(BleServiceBus(currentReadValue = data.value?.toString(Charset.defaultCharset())))
             //TODO: fix this so it ignores repeat messages, or properly handles messages of a longer length
-            BleRepository.addToStack(data.value?.toString(Charset.defaultCharset()) ?: "error")
+            //BleRepository.addToStack(data.value?.toString(Charset.defaultCharset()) ?: "error")
             postNotification(
                 NotificationMessage(
                     body = data.value?.toString(Charset.defaultCharset())

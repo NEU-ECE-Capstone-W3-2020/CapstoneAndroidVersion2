@@ -14,6 +14,8 @@ import com.example.capstoneandroidversion2.bus.BleServiceBus
 import com.example.capstoneandroidversion2.bus.BusHolder
 import com.example.capstoneandroidversion2.bus.FragmentToBleBus
 import com.example.capstoneandroidversion2.model.NotificationMessage
+import com.example.capstoneandroidversion2.ui.BLUETOOTH_MESSAGE_KEY
+import com.example.capstoneandroidversion2.ui.BROADCAST_GET_STRING
 import com.example.capstoneandroidversion2.ui.MainActivity
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
@@ -68,6 +70,7 @@ class BleService : Service() {
                 )
                 // WORKING CONNECTION
                 bleManager = BleManager(applicationContext) { msg ->
+                    broadcastString(msg)
                     showNotification(msg)
                 }
                 bleManager
@@ -78,6 +81,13 @@ class BleService : Service() {
             }
         }
         return START_STICKY
+    }
+
+    private fun broadcastString(msg: NotificationMessage) {
+        val intent = Intent(BROADCAST_GET_STRING).apply {
+            putExtra(BLUETOOTH_MESSAGE_KEY,msg)
+            sendBroadcast(this)
+        }
     }
 
     override fun stopService(name: Intent?): Boolean {

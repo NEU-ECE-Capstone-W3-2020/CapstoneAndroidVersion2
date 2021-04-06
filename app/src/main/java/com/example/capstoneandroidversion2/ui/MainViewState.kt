@@ -12,7 +12,7 @@ data class MainViewState(
 ) {
     //TODO: make this function check the repo for proper strings
     fun appendMessage(msg: String): MainViewState? {
-        val newList = readPosts?.toMutableList()
+        val newList = readPosts?.toMutableList() ?: mutableListOf()
         newList?.let {
             it.add(
                 NotificationMessage(
