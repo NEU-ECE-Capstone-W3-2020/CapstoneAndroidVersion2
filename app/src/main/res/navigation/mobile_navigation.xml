@@ -12,12 +12,6 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_bluetooth"
-        android:name="com.example.capstoneandroidversion2.ui.fragment.BluetoothFragment"
-        android:label="@string/title_bluetooth"
-        tools:layout="@layout/fragment_bluetooth" />
-
-    <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.capstoneandroidversion2.ui.fragment.HistoryFragment"
         android:label="@string/title_notifications"

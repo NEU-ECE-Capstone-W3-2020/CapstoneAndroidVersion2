@@ -3,8 +3,8 @@ package com.example.capstoneandroidversion2.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.capstoneandroidversion2.model.NotificationMessage
 
-//TODO: Put Bus communication values in here
 class MainViewModel : ViewModel() {
 
     // LiveData
@@ -13,8 +13,7 @@ class MainViewModel : ViewModel() {
     }
     val viewState: LiveData<MainViewState> = _viewState
 
-    fun postReadValue(msg: String) {
+    fun postReadValue(msg: NotificationMessage) {
         _viewState.postValue(_viewState.value?.appendMessage(msg))
     }
-
 }

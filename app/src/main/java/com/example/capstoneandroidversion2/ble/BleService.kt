@@ -1,6 +1,5 @@
 package com.example.capstoneandroidversion2.ble
 
-import android.R
 import android.app.*
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
@@ -10,13 +9,9 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.example.capstoneandroidversion2.bus.BleServiceBus
-import com.example.capstoneandroidversion2.bus.BusHolder
-import com.example.capstoneandroidversion2.bus.FragmentToBleBus
+import com.example.capstoneandroidversion2.R
 import com.example.capstoneandroidversion2.model.NotificationMessage
-import com.example.capstoneandroidversion2.ui.MainActivity
-import com.squareup.otto.Bus
-import com.squareup.otto.Subscribe
+import com.example.capstoneandroidversion2.ui.*
 
 /**
  * Working bluetooth background service we'll use to maintain a connection to our device
@@ -27,8 +22,7 @@ class BleService : Service() {
     private val CHANNEL_NAME = "CHANNEL_NAME"
     private val CHANNEL_DESCRIPTION = "CHANNEL_DESCRIPTION"
 
-    private lateinit var bleManager: BleManager
-    private val bus: Bus = BusHolder.bus
+    private var bleManager: BleManager? = null
     private lateinit var bleConnectionManager: BleConnectionManager
     private val mBinder = LocalBinder()
     private val bluetoothAdapter: BluetoothAdapter by lazy {
@@ -47,7 +41,6 @@ class BleService : Service() {
 
     override fun onCreate() {
         logger("Service Started")
-        bus.register(this)
         super.onCreate()
     }
 
@@ -55,26 +48,21 @@ class BleService : Service() {
         logger("OnStartCommand")
         // first scan for devices
         bleConnectionManager = BleConnectionManager(
-            "Capstone Beacon",
+            resources.getString(R.string.beacon_name),
             bluetoothAdapter
         ).apply {
             startBleScan()
             setResultCallback { result ->
-                bus.post(
-                    BleServiceBus(
-                        isDeviceFound = true,
-                        device = result
-                    )
-                )
                 // WORKING CONNECTION
-                bleManager = BleManager(applicationContext) { msg ->
+                bleManager = BleManager(applicationContext, resources) { msg ->
+                    broadcastString(msg)
                     showNotification(msg)
+                }.apply {
+                    this.connect(result.device)
+                        .retry(3, 100)
+                        .useAutoConnect(false)
+                        .enqueue()
                 }
-                bleManager
-                    .connect(result.device)
-                    .retry(3, 100)
-                    .useAutoConnect(false)
-                    .enqueue()
             }
         }
         return START_STICKY
@@ -89,27 +77,17 @@ class BleService : Service() {
         Log.wtf(this.javaClass.canonicalName, s)
     }
 
-    /**
-     * we use a communication bus to communicate from service to class
-     */
-    @Subscribe
-    fun getFragmentEvent(event: FragmentToBleBus) {
-        event.shouldRead?.let {
-            //TODO: read the currently advertised value back to the user
-        }
-        event.shouldWrite?.let {
-            //TODO: Maybe add a way to write values to the
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        bleManager.disconnect()
-            .done {
-                bleManager.close()
-                logger("CLOSED")
-            }.enqueue()
-        logger("DESTROYED")
+        bleManager?.let { manager ->
+            manager.disconnect()
+                .done {
+                    manager.close()
+                    logger("CLOSED")
+                }
+                .enqueue()
+            logger("DESTROYED")
+        }
     }
 
     private fun showNotification(message: NotificationMessage) {
@@ -132,11 +110,17 @@ class BleService : Service() {
         // creating notification for the user
         notification = builder.setContentTitle(message.subject)
             .setContentText(message.body)
-            .setSmallIcon(R.mipmap.sym_def_app_icon)
+            .setSmallIcon(android.R.mipmap.sym_def_app_icon)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .build()
         notificationManager.notify(0, notification)
     }
 
+    private fun broadcastString(msg: NotificationMessage) {
+        val intent = Intent(BROADCAST_GET_STRING).apply {
+            putExtra(BLUETOOTH_MESSAGE_KEY, msg)
+            sendBroadcast(this)
+        }
+    }
 }

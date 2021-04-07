@@ -5,15 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.capstoneandroidversion2.R
-import com.example.capstoneandroidversion2.bus.BusHolder
 import com.example.capstoneandroidversion2.ui.MainViewModel
 import com.example.capstoneandroidversion2.ui.TagAdapter
 
-//TODO: refactor this for actual use or kill the screen
 class HistoryFragment : Fragment() {
 
     private lateinit var viewModel: MainViewModel
@@ -26,7 +25,6 @@ class HistoryFragment : Fragment() {
 
         savedInstanceState: Bundle?
     ): View? {
-        BusHolder.bus.register(this)
         viewModel =
             ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_notifications, container, false)
@@ -36,12 +34,12 @@ class HistoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         recyclerview = view.findViewById(R.id.history_recyclerview)
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
-        viewModel.viewState.observe(viewLifecycleOwner) { viewState ->
+        viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
             viewState.readPosts?.let { list ->
-                recyclerview.adapter = TagAdapter(list) {
+                recyclerview.adapter = TagAdapter(list.reversed()) {
                     //TODO: maybe read the message? I think accessibility settings might already do this
                 }
             }
-        }
+        })
     }
 }
