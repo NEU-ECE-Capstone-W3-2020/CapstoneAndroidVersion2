@@ -4,8 +4,8 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
 import android.content.Context
-import com.example.capstoneandroidversion2.bus.BleServiceBus
-import com.example.capstoneandroidversion2.bus.BusHolder
+import android.content.res.Resources
+import com.example.capstoneandroidversion2.R
 import com.example.capstoneandroidversion2.model.NotificationMessage
 import no.nordicsemi.android.ble.callback.DataReceivedCallback
 import no.nordicsemi.android.ble.callback.DataSentCallback
@@ -15,7 +15,11 @@ import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.*
 
-class BleManager(context: Context, postNotification: (NotificationMessage) -> Unit) :
+class BleManager(
+    context: Context,
+    val resources: Resources,
+    postNotification: (NotificationMessage) -> Unit
+) :
     ObservableBleManager(context) {
 
     companion object {
@@ -28,6 +32,7 @@ class BleManager(context: Context, postNotification: (NotificationMessage) -> Un
     private var readCharacteristic: BluetoothGattCharacteristic? = null
     private var writeCharacteristic: BluetoothGattCharacteristic? = null
     private var supported = false
+    private var lastReadValue = ""
 
 
     override fun getGattCallback(): BleManagerGattCallback {
@@ -35,24 +40,34 @@ class BleManager(context: Context, postNotification: (NotificationMessage) -> Un
     }
 
     private val readCallback = object : DataSentCallback, DataReceivedCallback {
-        override fun onDataSent(device: BluetoothDevice, data: Data) {
-            //readState.postValue(data.value?.toString(Charset.defaultCharset()))
-            //TODO: do we need to to anything here?
-        }
-
+        override fun onDataSent(device: BluetoothDevice, data: Data) {}
         override fun onDataReceived(device: BluetoothDevice, data: Data) {
-            //readState.postValue(data.value?.toString(Charset.defaultCharset()))
-            //BusHolder.bus.post(BleServiceBus(currentReadValue = data.value?.toString(Charset.defaultCharset())))
-            //TODO: fix this so it ignores repeat messages, or properly handles messages of a longer length
-            //BleRepository.addToStack(data.value?.toString(Charset.defaultCharset()) ?: "error")
-            postNotification(
-                NotificationMessage(
-                    body = data.value?.toString(Charset.defaultCharset())
-                        ?: "error reading data value",
-                    subject = "New Tag Discovered!",
-                    timestamp = SimpleDateFormat("HH:mm").format(Date())
-                )
-            )
+            // first we check if we have already read this
+            val msg = data.value?.toString(Charset.defaultCharset())?.removeSuffix("\n") ?: "error"
+            val notification =
+                // checking if its a special character
+                if (msg.isNumber()) {
+                    NotificationMessage(
+                        body = resources.getString(
+                            msg.toResourceString()
+                        )
+                            ?: "error reading data value",
+                        subject = "New Tag Discovered!",
+                        timestamp = SimpleDateFormat("HH:mm").format(Date())
+                    )
+                } else {
+                    NotificationMessage(
+                        body = msg
+                            ?: "error reading data value",
+                        subject = "New Tag Discovered!",
+                        timestamp = SimpleDateFormat("HH:mm").format(Date())
+                    )
+                }
+            // right now we get spammed with messages, so this line prevents us from repeats
+            if (msg != lastReadValue) {
+                lastReadValue = msg
+                postNotification(notification)
+            }
         }
     }
 
@@ -88,3 +103,19 @@ class BleManager(context: Context, postNotification: (NotificationMessage) -> Un
         }
     }
 }
+
+private fun String?.toResourceString(): Int =
+    when (this?.toIntOrNull()) {
+        0 -> R.string.tag_0
+        1 -> R.string.tag_1
+        2 -> R.string.tag_2
+        3 -> R.string.tag_3
+        4 -> R.string.tag_4
+        5 -> R.string.tag_5
+        6 -> R.string.tag_6
+        7 -> R.string.tag_7
+        else -> R.string.error
+    }
+
+private fun String?.isNumber(): Boolean =
+    this?.toIntOrNull() != null

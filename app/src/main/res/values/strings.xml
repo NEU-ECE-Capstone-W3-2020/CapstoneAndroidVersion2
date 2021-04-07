@@ -3,4 +3,16 @@
     <string name="title_home">Home</string>
     <string name="title_bluetooth">Bluetooth</string>
     <string name="title_notifications">Notifications</string>
+    <string name="beacon_name">CANE</string>
+    <!-- STRING tag resources -->
+    <string name="tag_0">Dr. Masseys Office</string>
+    <string name="tag_1">Room 203</string>
+    <string name="tag_2">Elevator Floor 2</string>
+    <string name="tag_3">Cafe Strega, currently closed. Hours 10am to 6pm</string>
+    <string name="tag_4">Welcome to Cafe Strega, open until 6pm. Come grab a pastry!</string>
+    <string name="tag_5">Calculus 2 - Lupi, ending at 9am </string>
+    <string name="tag_6">Exit to isec quad</string>
+    <string name="tag_7">Welcome to ISEC</string>
+    <string name="error">Failed to convert string index to special case</string>
+
 </resources>

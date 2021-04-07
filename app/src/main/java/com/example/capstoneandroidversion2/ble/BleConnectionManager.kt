@@ -5,17 +5,11 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.util.Log
-import com.example.capstoneandroidversion2.bus.BusHolder
 
 class BleConnectionManager(
     val deviceName: String,
     private val bluetoothAdapter: BluetoothAdapter
 ) {
-
-    // first we need to register this as a bus listener for communication
-    init {
-        BusHolder.bus.register(this)
-    }
 
     private lateinit var mCallback: (ScanResult) -> Unit
     private val logTag: String = "BleManager"
