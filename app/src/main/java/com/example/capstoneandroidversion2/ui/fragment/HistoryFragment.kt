@@ -1,5 +1,6 @@
 package com.example.capstoneandroidversion2.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,8 +11,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.capstoneandroidversion2.R
+import com.example.capstoneandroidversion2.model.NotificationMessage
+import com.example.capstoneandroidversion2.ui.MAP_DTO_KEY
 import com.example.capstoneandroidversion2.ui.MainViewModel
+import com.example.capstoneandroidversion2.ui.MapActivity
 import com.example.capstoneandroidversion2.ui.TagAdapter
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HistoryFragment : Fragment() {
 
@@ -36,10 +42,31 @@ class HistoryFragment : Fragment() {
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
             viewState.readPosts?.let { list ->
-                recyclerview.adapter = TagAdapter(list.reversed()) {
-                    //TODO: maybe read the message? I think accessibility settings might already do this
-                }
+                updateAdapter(list)
             }
+
+
         })
+        // even if we have nothing (REMOVE AFTER TESTING)
+        updateAdapter(
+            mutableListOf(
+                NotificationMessage(
+                    body = getString(R.string.tag_4),
+                    subject = "New Tag Discovered",
+                    timestamp = SimpleDateFormat("hh:mm a MMMM dd, YYYY").format(Date()),
+                    lat = null,
+                    long = null
+                )
+            )
+        )
+    }
+
+    private fun updateAdapter(list: List<NotificationMessage>) {
+        recyclerview.adapter = TagAdapter(list.reversed()) {
+            val intent = Intent(requireContext(), MapActivity::class.java).apply {
+                putExtra(MAP_DTO_KEY, it)
+            }
+            startActivity(intent)
+        }
     }
 }

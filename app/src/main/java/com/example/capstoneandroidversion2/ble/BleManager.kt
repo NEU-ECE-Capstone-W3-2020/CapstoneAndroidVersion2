@@ -53,14 +53,18 @@ class BleManager(
                         )
                             ?: "error reading data value",
                         subject = "New Tag Discovered!",
-                        timestamp = SimpleDateFormat("HH:mm").format(Date())
+                        timestamp = SimpleDateFormat("HH:mm").format(Date()),
+                        lat = null,
+                        long = null
                     )
                 } else {
                     NotificationMessage(
                         body = msg
                             ?: "error reading data value",
                         subject = "New Tag Discovered!",
-                        timestamp = SimpleDateFormat("HH:mm").format(Date())
+                        timestamp = SimpleDateFormat("HH:mm").format(Date()),
+                        lat = null,
+                        long = null
                     )
                 }
             // right now we get spammed with messages, so this line prevents us from repeats

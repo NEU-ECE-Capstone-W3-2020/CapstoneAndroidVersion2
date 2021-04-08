@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'com.google.secrets_gradle_plugin' version '0.5'
 }
 
 android {
@@ -59,4 +60,7 @@ dependencies {
     // BLE library
     implementation 'no.nordicsemi.android:ble-livedata:2.2.4'
     implementation 'no.nordicsemi.android:ble:2.2.4'
+    // Maps Library
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.android.libraries.places:places:2.4.0'
 }
