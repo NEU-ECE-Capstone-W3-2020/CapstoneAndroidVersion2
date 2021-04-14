@@ -21,7 +21,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var titleTextview: TextView
     private lateinit var placeTextView: TextView
 
-    private val defaultLocation = LatLng(42.337700, -71.086868)
     private var map: GoogleMap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,8 +60,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 moveCamera(
                     CameraUpdateFactory.newLatLngZoom(
                         LatLng(
-                            it.lat ?: defaultLocation.latitude,
-                            it.long ?: defaultLocation.longitude
+                            it.lat,
+                            it.long
                         ), DEFAULT_ZOOM.toFloat()
                     )
                 )
@@ -70,8 +69,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     MarkerOptions()
                         .position(
                             LatLng(
-                                it.lat ?: defaultLocation.latitude,
-                                it.long ?: defaultLocation.longitude
+                                it.lat,
+                                it.long
                             )
                         )
                         .title(it.subject)

@@ -11,12 +11,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.capstoneandroidversion2.R
+import com.example.capstoneandroidversion2.ble.defaultLocation
 import com.example.capstoneandroidversion2.model.NotificationMessage
 import com.example.capstoneandroidversion2.ui.MAP_DTO_KEY
 import com.example.capstoneandroidversion2.ui.MainViewModel
 import com.example.capstoneandroidversion2.ui.MapActivity
 import com.example.capstoneandroidversion2.ui.TagAdapter
 import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.Instant
 import java.util.*
 
 class HistoryFragment : Fragment() {
@@ -51,13 +54,26 @@ class HistoryFragment : Fragment() {
         updateAdapter(
             mutableListOf(
                 NotificationMessage(
-                    body = getString(R.string.tag_4),
+                    body = getString(R.string.tag_1),
                     subject = "New Tag Discovered",
                     timestamp = SimpleDateFormat("hh:mm a MMMM dd, YYYY").format(Date()),
-                    lat = null,
-                    long = null
+                    lat = defaultLocation.latitude,
+                    long = defaultLocation.longitude
+                ),
+                NotificationMessage(
+                    body = getString(R.string.tag_2),
+                    subject = "New Tag Discovered",
+                    timestamp = SimpleDateFormat("hh:mm a MMMM dd, YYYY").format(
+                        Date.from(
+                            Instant.now() - Duration.ofDays(
+                                3
+                            )
+                        )
+                    ),
+                    lat = defaultLocation.latitude,
+                    long = defaultLocation.longitude
                 )
-            )
+            ).reversed()
         )
     }
 

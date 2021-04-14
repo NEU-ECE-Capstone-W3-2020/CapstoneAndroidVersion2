@@ -5,19 +5,31 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
+import android.location.Location
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.example.capstoneandroidversion2.BuildConfig
 import com.example.capstoneandroidversion2.R
 import com.example.capstoneandroidversion2.model.NotificationMessage
 import com.example.capstoneandroidversion2.ui.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.PlacesClient
 
 /**
  * Working bluetooth background service we'll use to maintain a connection to our device
  */
+val defaultLocation = LatLng(42.337700, -71.086868)
+
 class BleService : Service() {
 
+    private var lastKnownLocation: Location? = null
+    private var placesClient: PlacesClient? = null
+    private var fusedLocationProviderClient: FusedLocationProviderClient? = null
     private val CHANNEL_ID = "CHANNEL_ID"
     private val CHANNEL_NAME = "CHANNEL_NAME"
     private val CHANNEL_DESCRIPTION = "CHANNEL_DESCRIPTION"
@@ -42,6 +54,13 @@ class BleService : Service() {
     override fun onCreate() {
         logger("Service Started")
         super.onCreate()
+        // FOR GETTING THE TAG LOCATION
+        // Construct a PlacesClient
+        Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY)
+        placesClient = Places.createClient(this)
+
+        // Construct a FusedLocationProviderClient.
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -118,9 +137,43 @@ class BleService : Service() {
     }
 
     private fun broadcastString(msg: NotificationMessage) {
-        val intent = Intent(BROADCAST_GET_STRING).apply {
-            putExtra(BLUETOOTH_MESSAGE_KEY, msg)
-            sendBroadcast(this)
+        // call this, which gives a callback to our intent maker
+        getDeviceLocation { location ->
+            val intent = Intent(BROADCAST_GET_STRING).apply {
+                putExtra(
+                    BLUETOOTH_MESSAGE_KEY,
+                    msg.copy(
+                        // if the device locatioin was successful, we should be able to set it here
+                        lat = location?.latitude ?: defaultLocation.latitude,
+                        long = location?.longitude ?: defaultLocation.longitude
+                    )
+                )
+                sendBroadcast(this)
+            }
+        }
+    }
+
+    private fun getDeviceLocation(locationSetter: (Location?) -> Unit) {
+        /*
+         * Get the best and most recent location of the device, which may be null in rare
+         * cases when a location is not available.
+         */
+        try {
+            val locationResult = fusedLocationProviderClient?.lastLocation
+            locationResult?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Set the map's camera position to the current location of the device.
+                    lastKnownLocation = task.result
+                    lastKnownLocation?.let { locationSetter(it) }
+                } else {
+                    Log.d("TAG", "Current location is null. Using defaults.")
+                    locationSetter(null)
+                }
+            }
+
+        } catch (e: SecurityException) {
+            Log.e("Exception: %s", e.message, e)
+            locationSetter(null)
         }
     }
 }
